@@ -1,0 +1,1 @@
+ile kolejek na serwer? 5+(5*4)/2+1=16? 
