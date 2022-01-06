@@ -1,1 +1,1 @@
-ile kolejek na serwer? 5+(5*4)/2+1=16? 
+ile kolejek na serwer? 5+(5*4)/2+1+5=21? lub (5*4)/2=10
