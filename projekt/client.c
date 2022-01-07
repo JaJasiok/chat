@@ -1,57 +1,79 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<sys/types.h>
-#include<sys/stat.h>
-#include<unistd.h>
-#include<fcntl.h>
-#include<sys/ipc.h>
-#include<sys/msg.h>
-#include<sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/time.h>
+#include <stdbool.h>
 
 int MAX_length = 50;
 
-struct msgbuf{
+struct msgbuf
+{
     long type;
-    char tab[MAX_length];
-    
+    char tab[1024];
+
 } send, receive;
 
+struct validation{
+    long type;
+    bool is_valid;
+}v_msg1, v_msg2;
 
+// void clear(){
+//     memset(send,'\0',strlen(send));
+// }
 
-void clear(){
-    memset(send,'\0',strlen(send));
-}
+int main(int argc, char *argv[])
+{
+    int q_number = atoi(argv[1]);
 
+    int id = msgget(q_number, 0644 | IPC_CREAT);
 
+    bool space_available = false;
+    bool valid_username = false;
 
-
-int main(int argc, char*argv[]){
-
-    int id = mssget(argv[1], 0644 | IPC_CREAT);
-
-    send.type = 0;
-
-    bool valid = False;
-
-    while(1){
+    while (1)
+    {
         printf("Enter username:");
-        scanf("%s", &send.tab);
-        msgsnd(id, &send, strlen(send.tab)+1, 0);
-        if(valid = True){
+        char str[1024];
+        scanf("%s", str);
+        strcpy(send.tab, str);
+        send.type = 1;
+        msgsnd(id, &send, strlen(send.tab) + 1, 0);
+        v_msg1.type = 2;
+        msgrcv(id, &v_msg1, sizeof(v_msg1.is_valid), v_msg1.type, 0);
+        space_available = v_msg1.is_valid;
+        if(space_available == false){
+            printf("The server is full/n");
             break;
         }
-        else{
-            printf("This username is already taken! Please choose another one.")
+        v_msg2.type = 3;
+        msgrcv(id, &v_msg2, sizeof(v_msg2.is_valid), v_msg2.type, 0);
+        valid_username = v_msg2.is_valid;
+        
+        if (valid_username == true)
+        {
+            printf("Access granted./n");
+            printf("Welcome!/n");
+            break;
+        }
+        else
+        {
+            printf("This username is already taken! Please choose another one./n");
         }
     }
-    execlp("clear", "clear", NONE)
-    
-    valid = False;
-    
+    execlp("clear", "clear", NULL);
+
+    // valid = false;
+
     printf("Enter room name:");
-    scanf("%s", &send.tab);
-    msgsnd(id, &send, strlen(send.tab)+1, 0);
+    scanf("%s", send.tab);
+    msgsnd(id, &send, strlen(send.tab) + 1, 0);
 
     return 0;
 }
