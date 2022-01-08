@@ -39,17 +39,18 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        printf("Enter username:");
+        printf("Enter username:\n");
         char str[1024];
         scanf("%s", str);
+        printf("%s\n", str);
         strcpy(send.tab, str);
         send.type = 1;
-        msgsnd(id, &send, strlen(send.tab) + 1, 0);
+        printf("%d\n", msgsnd(id, &send, strlen(send.tab) + 1, 0));
         v_msg1.type = 2;
         msgrcv(id, &v_msg1, sizeof(v_msg1.is_valid), v_msg1.type, 0);
         space_available = v_msg1.is_valid;
         if(space_available == false){
-            printf("The server is full/n");
+            printf("The server is full\n");
             break;
         }
         v_msg2.type = 3;
@@ -58,20 +59,20 @@ int main(int argc, char *argv[])
         
         if (valid_username == true)
         {
-            printf("Access granted./n");
-            printf("Welcome!/n");
+            printf("Access granted.\n");
+            printf("Welcome!\n");
             break;
         }
         else
         {
-            printf("This username is already taken! Please choose another one./n");
+            printf("This username is already taken! Please choose another one.\n");
         }
     }
     execlp("clear", "clear", NULL);
 
     // valid = false;
 
-    printf("Enter room name:");
+    printf("Enter room name:\n");
     scanf("%s", send.tab);
     msgsnd(id, &send, strlen(send.tab) + 1, 0);
 

@@ -10,7 +10,6 @@
 #include <sys/time.h>
 #include <stdbool.h>
 
-//int MAX_length = 50;
 int MAX_users = 5;
 int MAX_rooms = 5;
 
@@ -22,7 +21,7 @@ int MAX_rooms = 5;
 struct validation{
     long type;
     bool is_valid;
-}v_msg;
+} v_msg;
 
 struct msgbuf
 {
@@ -37,35 +36,37 @@ int main(int argc, char *argv[])
     printf("%s", argv[1]);
     
     
-    printf("1111111111111111111\n");
+    printf("1\n");
     int fd = open("users.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
-    printf("1111111111111111111\n");
+    printf("1\n");
     int q_number = atoi(argv[1]);
-    printf("1111111111111111111\n");
+    printf("1\n");
+    // int id = 3;
     int id = msgget(q_number, 0644 | IPC_CREAT);
-    printf("1111111111111111111\n");
-    // char users[MAX_rooms][20];
-    printf("1111111111111111111\n");
-    printf("supadupa");
-    // char rooms[MAX_rooms][20];
+    printf("1\n");
+    char users[MAX_rooms][20];
+    printf("qweq\n");
+    printf("yuiyu\n");
+    printf("dfg\n");
+    char rooms[MAX_rooms][20];
     
-    // for (int i = 0; i < MAX_users; i++)
-    // {
-    //     memset(users[i], '\0', strlen(users[i]));
-    // }
+    for (int i = 0; i < MAX_users; i++)
+    {
+        memset(users[i], '\0', strlen(users[i]));
+    }
 
-    // for (int i = 0; i < MAX_rooms; i++)
-    // {
-    //     memset(rooms[i], '\0', strlen(rooms[i]));
-    // }
-    printf("to jednak nie to");
+    for (int i = 0; i < MAX_rooms; i++)
+    {
+        memset(rooms[i], '\0', strlen(rooms[i]));
+    }
+    printf("to jednak nie to\n");
     // char commands = {"exit", "enter", "logout", "private", "server", "room", "in_room", "on_server", "help", "history"};
 
     while (1)
     {
         receive.type = 1;
         msgrcv(id, &receive, strlen(receive.text), receive.type, 0);
-        printf("%s", receive.text);
+        printf("%s\n", receive.text);
         switch (receive.type)
         {
         case 1:
