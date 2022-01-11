@@ -31,23 +31,24 @@ struct msgbuf
 
 int main(int argc, char *argv[])
 {   
-    int user_count = 2;
-    printf("%d", user_count);
-    printf("%s", argv[1]);
+    int user_count = 0;
+    // printf("%d", user_count);
+    // printf("%s", argv[1]);
     
+    int string_size = 1024;
+    int bool_size = sizeof(bool);
     
-    printf("1\n");
     int fd = open("users.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
-    printf("1\n");
+    // printf("1\n");
     int q_number = atoi(argv[1]);
     printf("1\n");
     // int id = 3;
     int id = msgget(q_number, 0644 | IPC_CREAT);
-    printf("1\n");
+    // printf("1\n");
     char users[MAX_rooms][20];
-    printf("qweq\n");
-    printf("yuiyu\n");
-    printf("dfg\n");
+    // printf("qweq\n");
+    // printf("yuiyu\n");
+    // printf("dfg\n");
     char rooms[MAX_rooms][20];
     
     for (int i = 0; i < MAX_users; i++)
@@ -59,13 +60,13 @@ int main(int argc, char *argv[])
     {
         memset(rooms[i], '\0', strlen(rooms[i]));
     }
-    printf("to jednak nie to\n");
+    // printf("to jednak nie to\n");
     // char commands = {"exit", "enter", "logout", "private", "server", "room", "in_room", "on_server", "help", "history"};
 
     while (1)
     {
         receive.type = 1;
-        msgrcv(id, &receive, strlen(receive.text), receive.type, 0);
+        msgrcv(id, &receive, string_size, receive.type, 0);
         printf("%s\n", receive.text);
         switch (receive.type)
         {
@@ -110,7 +111,7 @@ int main(int argc, char *argv[])
             if (valid == true)
             {
                 write(fd, receive.text, strlen(receive.text));
-                //write(fd, '\n', 1);
+                write(fd, '\n', 1);
             }
             break;
 
