@@ -10,7 +10,7 @@
 #include <sys/time.h>
 #include <stdbool.h>
 
-int MAX_length = 50;
+// int MAX_length = 50;
 
 struct msgbuf
 {
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
             printf("This username is already taken! Please choose another one.\n");
         }
     }
-    execlp("clear", "clear", NULL);
+    // execlp("clear", "clear", NULL);
 
     // valid = false;
 
