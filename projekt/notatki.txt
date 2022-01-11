@@ -23,6 +23,27 @@ typy:
 klient wysyła zapytanie do sv czy jest miejsce i czy nazwa uzytkownika jest
 
 
+
+serwer pamięta usernamey wszytskich użytkowników (zapisanych na niego) wraz z ich id
+
+plik (chyba txt, może jakiś tymczasowy) zawiera nazwy wszystkich pokoi (na wszystkich serwerach)
+
+każdy pokój ma własny plik z usernameami wszystkich zapisanych do niego użytkowników
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>

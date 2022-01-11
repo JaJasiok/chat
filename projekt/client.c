@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     
     int string_size = 1024;
     int bool_size = sizeof(bool);
+    char str[1024];
 
     while (1)
     {
@@ -75,10 +76,18 @@ int main(int argc, char *argv[])
     // execlp("clear", "clear", NULL);
 
     // valid = false;
-
+    
     printf("Enter room name:\n");
-    scanf("%s", send.tab);
+    scanf("%s", str);
+    strcpy(send.tab, str);
+    send.type = 1;
     msgsnd(id, &send, strlen(send.tab) + 1, 0);
+    
+    while (1)
+    {
+        /* code */
+    }
+    
 
     return 0;
 }
