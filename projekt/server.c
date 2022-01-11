@@ -37,11 +37,12 @@ int main(int argc, char *argv[])
     
     int string_size = 1024;
     int bool_size = sizeof(bool);
+    char endl[] = "\n";
     
     int fd = open("users.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
     // printf("1\n");
     int q_number = atoi(argv[1]);
-    printf("1\n");
+    // printf("1\n");
     // int id = 3;
     int id = msgget(q_number, 0644 | IPC_CREAT);
     // printf("1\n");
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
     {
         receive.type = 1;
         msgrcv(id, &receive, string_size, receive.type, 0);
-        printf("%s\n", receive.text);
+        // printf("%s\n", receive.text);
         switch (receive.type)
         {
         case 1:
@@ -75,14 +76,14 @@ int main(int argc, char *argv[])
             {
                 v_msg.is_valid = false;
                 v_msg.type = 2;
-                msgsnd(id, &v_msg, sizeof(v_msg), 0);
+                msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
                 break;
             }
             else
             {
                 v_msg.is_valid = true;
                 v_msg.type = 2;
-                msgsnd(id, &v_msg, sizeof(v_msg), 0);    
+                msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
             }
             char c, buf[1024];
             int index = 0;
@@ -111,7 +112,10 @@ int main(int argc, char *argv[])
             if (valid == true)
             {
                 write(fd, receive.text, strlen(receive.text));
-                write(fd, '\n', 1);
+                write(fd, endl, 1);
+                v_msg.is_valid = true;
+                v_msg.type = 3;
+                msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
             }
             break;
 
