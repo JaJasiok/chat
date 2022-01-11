@@ -28,7 +28,7 @@ serwer pamięta usernamey wszytskich użytkowników (zapisanych na niego) wraz z
 
 plik (chyba txt, może jakiś tymczasowy) zawiera nazwy wszystkich pokoi (na wszystkich serwerach)
 
-każdy pokój ma własny plik z usernameami wszystkich zapisanych do niego użytkowników
+każdy pokój ma własny plik z usernameami wszystkich zapisanych do niego użytkowników i id ich serwera macierzystego
 
 
 
