@@ -15,8 +15,7 @@
 struct msgbuf
 {
     long type;
-    char tab[1024];
-
+    char text[1024];
 } send, receive;
 
 struct validation{
@@ -47,18 +46,19 @@ int main(int argc, char *argv[])
         char str[1024];
         scanf("%s", str);
         // printf("%s\n", str);
-        strcpy(send.tab, str);
+        strcpy(send.text, str);
         send.type = 1;
-        msgsnd(id, &send, strlen(send.tab) + 1, 0)
-        // printf("%d\n", msgsnd(id, &send, strlen(send.tab) + 1, 0));
-        v_msg1.type = 2;
+        msgsnd(id, &send, strlen(send.text) + 1, 0);
+        // printf("%d\n", msgsnd(id, &send, strlen(send.text) + 1, 0));
+        v_msg1.type = 200;
         msgrcv(id, &v_msg1, bool_size, v_msg1.type, 0);
         space_available = v_msg1.is_valid;
         if(space_available == false){
             printf("The server is full\n");
             break;
         }
-        v_msg2.type = 3;
+        
+        v_msg2.type = 300;
         msgrcv(id, &v_msg2, bool_size, v_msg2.type, 0);
         valid_username = v_msg2.is_valid;
         
@@ -79,15 +79,28 @@ int main(int argc, char *argv[])
     
     printf("Enter room name:\n");
     scanf("%s", str);
-    strcpy(send.tab, str);
+    strcpy(send.text, str);
     send.type = 1;
-    msgsnd(id, &send, strlen(send.tab) + 1, 0);
+    msgsnd(id, &send, strlen(send.text) + 1, 0);
     
-    while (1)
-    {
-        /* code */
-    }
+    // if (fork() == 0)
+    // {
+    //     while (1)
+    //     {
+    //         // wysyłanie wiadomości
+    //     }
+    // }
+    // else
+    // {
+    //     while (1)
+    //     {
+    //         // odbieranie wiadomości
+    //     }
+    // }
     
+    
+    
+
 
     return 0;
 }

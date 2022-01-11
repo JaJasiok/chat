@@ -34,22 +34,45 @@ struct users
 {
     char usernames[5][1024];
     int ids[5];
-} users_list
+    
+} users_list;
 
 
 
 int main(int argc, char *argv[])
 {   
+    for (int i = 0; i < MAX_users; i++)
+    {
+        memset(users_list.usernames[i], 0, 1024);
+    }
     int user_count = 0;
     // printf("%d", user_count);
     // printf("%s", argv[1]);
     
     int string_size = 1024;
     int bool_size = sizeof(bool);
-    char endl[] = "\n";
+    // char endl[] = "\n";
     
-    int fd1 = open("users.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
-    int fd1 = open("rooms.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
+    // int *fd = malloc(2*sizeof(int));
+    
+    // fd[0] = open("users.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
+    // fd[1] = open("rooms.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
+    
+    
+    // size_t myarray_size = 1000;
+    // int* myarray = malloc(myarray_size * sizeof(int));
+
+    // myarray_size += 1000;
+    // int* myrealloced_array = realloc(myarray, myarray_size * sizeof(int));
+    // if (myrealloced_array) {
+    //     myarray = myrealloced_array;
+    // }else {
+    //     printf("nie dziala");
+    //     free(myarray);
+    // // deal with realloc failing because memory could not be allocated.
+    // }
+    // free(myarray);
+    
     // printf("1\n");
     int q_number = atoi(argv[1]);
     // printf("1\n");
@@ -62,78 +85,136 @@ int main(int argc, char *argv[])
     // printf("dfg\n");
     // char rooms[MAX_rooms][20];
     
-    for (int i = 0; i < MAX_users; i++)
-    {
-        memset(users[i], '\0', strlen(users[i]));
-    }
+    // for (int i = 0; i < MAX_users; i++)
+    // {
+    //     memset(users[i], '\0', strlen(users[i]));
+    // }
 
-    for (int i = 0; i < MAX_rooms; i++)
-    {
-        memset(rooms[i], '\0', strlen(rooms[i]));
-    }
+    // for (int i = 0; i < MAX_rooms; i++)
+    // {
+    //     memset(rooms[i], '\0', strlen(rooms[i]));
+    // }
     // printf("to jednak nie to\n");
     // char commands = {"exit", "enter", "logout", "private", "room", "rooms", "in_room", "on_server", "help", "history"};
 
     while (1)
     {
-        receive.type = 1;
-        msgrcv(id, &receive, string_size, receive.type, 0);
-        // printf("%s\n", receive.text);
+        // receive.type = 1;
+        msgrcv(id, &receive, string_size, -100, 0);
+        printf("Received username:\t%s\n", receive.text);
+        printf("Received type:\t%ld\n", receive.type);
         switch (receive.type)
         {
         case 1:
-            if (user_count == MAX_users-2)
+            // printf("case one");
+            if (user_count == MAX_users)
             {
                 v_msg.is_valid = false;
-                v_msg.type = 2;
+                v_msg.type = 200;
                 msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
                 break;
             }
             else
             {
                 v_msg.is_valid = true;
-                v_msg.type = 2;
+                v_msg.type = 200;
                 msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
+                
             }
-            char c, buf[1024];
-            int index = 0;
-            bool valid = true;
-            lseek(fd1, 0, SEEK_SET);
-            while ((read(fd1, &c, 1)) > 0)
-            {
-                if (c != '\n')
-                {
-                    strcpy(&buf[index], &c);
-                    index++;
-                }
-                else
-                {
-                    if (strcmp(buf, receive.text) == 0)
-                    {
-                        v_msg.is_valid = false;
-                        v_msg.type = 3;
-                        msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
-                        break;
-                    }
-                    index = 0;
-                    memset(buf, 0, strlen(buf));
-                }
-            }
-            if (valid == true)
-            {
-                write(fd1, receive.text, strlen(receive.text));
-                write(fd1, endl, 1);
-                v_msg.is_valid = true;
-                v_msg.type = 3;
-                msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
-            }
-            receive.type = 1;
-            msgrcv(id, &receive, string_size, receive.type, 0);
-            // printf("%s\n", receive.text);
             // char c, buf[1024];
             // int index = 0;
-            // lseek(fd2, 0, SEEK_SET);
-            // while ((read(fd2, &c, 1)) > 0)
+            bool valid = true;
+            // printf("to ten pierwszy");
+            // for (int i = 0; i < MAX_users; i++)
+            // {
+            //    printf("%s\n", users_list.usernames[i]);
+            // }
+            
+            
+            for (int i = 0; i < MAX_users; i++)
+            {
+                if(strcmp(receive.text, users_list.usernames[i]) == 0)
+                {
+                    printf("nie dobry\n");
+                    valid = false;
+                    v_msg.is_valid = valid;
+                    v_msg.type = 300;
+                    msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
+                    break;
+                }
+            }
+            
+            // printf("to ten drugi");
+            
+            if (valid == false)
+            {
+                break;
+            }
+            
+            
+            for (int i = 0; i < MAX_users; i++)
+            {
+                
+                printf("%d:\t%s\n", users_list.ids[i], users_list.usernames[i]);
+                // char buf[1024];
+                // strcpy(buf, users_list.usernames[i]);
+                if(users_list.usernames[i][0] == '\0')
+                {
+                    strcpy(users_list.usernames[i], receive.text);
+                    users_list.ids[i] = 50 + i;
+                    user_count++;
+                    printf("whatever\n");
+                    break;
+                }
+            }
+            
+            v_msg.is_valid = true;
+            v_msg.type = 300;
+            msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
+            
+            // receive.type = 1;
+            // msgrcv(id, &receive, string_size, receive.type, 0);
+            // printf("%s\n", receive.text);
+        
+        
+            
+            // lseek(fd[0], 0, SEEK_SET);
+            // while ((read(fd[0], &c, 1)) > 0)
+            // {
+            //     if (c != '\n')
+            //     {
+            //         strcpy(&buf[index], &c);
+            //         index++;
+            //     }           
+            //     else
+            //     {
+            //         if (strcmp(buf, receive.text) == 0)
+            //         {
+            //             valid = false;
+            //             v_msg.is_valid = valid;
+            //             v_msg.type = 3;
+            //             msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
+            //             break;
+            //         }
+            //         index = 0;
+            //         memset(buf, 0, strlen(buf));
+            //     }
+            // }
+            // if (valid == true)
+            // {
+            //     write(fd[0], receive.text, strlen(receive.text));
+            //     write(fd[0], endl, 1);
+            //     v_msg.is_valid = true;
+            //     v_msg.type = 3;
+            //     msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
+            //     receive.type = 1;
+            //     msgrcv(id, &receive, string_size, receive.type, 0);
+            //     printf("%s\n", receive.text);
+            // }
+            //
+            // index = 0;
+            // lseek(fd[1], 0, SEEK_SET);
+            // while ((read(fd[1], &c, 1)) > 0)
             // {
             //     if (c != '\n')
             //     {
@@ -150,10 +231,12 @@ int main(int argc, char *argv[])
             //         index = 0;
             //         memset(buf, 0, strlen(buf));
             //     }
+            //
             //     //stworzenie nowego pliku pokoju i dopisanie go do listy pokoi
             break;
 
         default:
+            printf("default\n");
             break;
         }
     }
