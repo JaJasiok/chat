@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 int MAX_users = 5;
-int MAX_rooms = 5;
+int MAX_rooms = 10;
 
 // struct history{
 //     char messages[10][1024];
@@ -37,7 +37,12 @@ struct users
     
 } users_list;
 
-
+struct room
+{
+    char room_name[1024];
+    char usernames[5][1024];
+    
+} rooms_list[10];
 
 int main(int argc, char *argv[])
 {   
@@ -172,11 +177,37 @@ int main(int argc, char *argv[])
             v_msg.type = 300;
             msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
             
-            // receive.type = 1;
-            // msgrcv(id, &receive, string_size, receive.type, 0);
-            // printf("%s\n", receive.text);
-        
-        
+            char username[1024];
+            strcpy(username, receive.text);
+            
+            receive.type = 1;
+            msgrcv(id, &receive, string_size, receive.type, 0);
+            int index = MAX_rooms;
+            
+            for (int i = 0; i < MAX_rooms; i++)
+            {
+                if(strcmp(rooms_list[i].room_name) == 0)
+                {
+                    for (int j = 0; j < MAX_users; j++)
+                    {
+                        if(rooms_list[i].usernames[j][0] == '\0')
+                        {
+                            strcpy(rooms_list[i].usernames[j], username.text);
+                            break;
+                        }
+                    }
+                }
+                if(rooms_list[i].room_name[0] == '\0' && index == MAX_rooms)
+                {
+                    index = 1;
+                }
+            }
+            if (index != MAX_rooms)
+            {
+                strcpy(rooms_list[index].room_name, receive.text);
+                strcpy(rooms_list[index].usernames[0], username);
+            }
+            
             
             // lseek(fd[0], 0, SEEK_SET);
             // while ((read(fd[0], &c, 1)) > 0)
