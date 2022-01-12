@@ -186,13 +186,13 @@ int main(int argc, char *argv[])
             
             for (int i = 0; i < MAX_rooms; i++)
             {
-                if(strcmp(rooms_list[i].room_name) == 0)
+                if(strcmp(rooms_list[i].room_name, receive.text) == 0)
                 {
                     for (int j = 0; j < MAX_users; j++)
                     {
                         if(rooms_list[i].usernames[j][0] == '\0')
                         {
-                            strcpy(rooms_list[i].usernames[j], username.text);
+                            strcpy(rooms_list[i].usernames[j], username);
                             break;
                         }
                     }
