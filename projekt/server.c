@@ -42,10 +42,39 @@ struct room
     char room_name[1024];
     char usernames[5][1024];
     
-} rooms_list[10];
+};
+
+void add_room(struct room* myarray){
+    int myarray_size = (sizeof(myarray) / sizeof(myarray[0])) + 1;
+    struct room* myrealloced_array = realloc(myarray, myarray_size * sizeof( struct room));
+    if (myrealloced_array) {
+        myarray = myrealloced_array;
+    }else {
+        printf("nie dziala");
+        //free(myarray);
+    // deal with realloc failing because memory could not be allocated.
+    }
+}
+
 
 int main(int argc, char *argv[])
 {   
+    struct room* rooms_list = malloc(1* sizeof(struct room));
+    int number_of_rooms = 1;
+    
+    // int a = sizeof(rooms_list)/ sizeof(struct room);
+    // rooms_list[0].room_name[0] = 'j';
+    // rooms_list[0].room_name[1] = 'p';
+    // printf("%s\n", rooms_list[0].room_name);
+    // add_room(rooms_list);
+    // int b = sizeof(rooms_list)/ sizeof(struct room);
+    // rooms_list[1].room_name[0] = 'h';
+    // rooms_list[1].room_name[1] = 'w';
+    // rooms_list[1].room_name[2] = 'd';
+    // rooms_list[1].room_name[3] = 'p';
+    // printf("%s\n", rooms_list[1].room_name);
+    // printf("%s\n", rooms_list[0].room_name);
+    
     for (int i = 0; i < MAX_users; i++)
     {
         memset(users_list.usernames[i], 0, 1024);
@@ -104,10 +133,12 @@ int main(int argc, char *argv[])
 
     while (1)
     {
+        
         // receive.type = 1;
         msgrcv(id, &receive, string_size, -100, 0);
         printf("Received username:\t%s\n", receive.text);
         printf("Received type:\t%ld\n", receive.type);
+        printf("od nowa:\n");
         switch (receive.type)
         {
         case 1:
@@ -182,9 +213,9 @@ int main(int argc, char *argv[])
             
             receive.type = 1;
             msgrcv(id, &receive, string_size, receive.type, 0);
-            int index = MAX_rooms;
+            bool already_added = false;
             
-            for (int i = 0; i < MAX_rooms; i++)
+            for (int i = 0; i < number_of_rooms; i++)
             {
                 if(strcmp(rooms_list[i].room_name, receive.text) == 0)
                 {
@@ -193,20 +224,40 @@ int main(int argc, char *argv[])
                         if(rooms_list[i].usernames[j][0] == '\0')
                         {
                             strcpy(rooms_list[i].usernames[j], username);
+                            already_added = true;
                             break;
                         }
                     }
                 }
-                if(rooms_list[i].room_name[0] == '\0' && index == MAX_rooms)
+                if(rooms_list[i].room_name[0] == '\0' && already_added != true)
                 {
-                    index = 1;
+                    // index = 1;
+                    strcpy(rooms_list[i].room_name, receive.text);
+                    strcpy(rooms_list[i].usernames[0], username);
+                    add_room(rooms_list);
+                    number_of_rooms += 1;
+                    break;
                 }
             }
-            if (index != MAX_rooms)
+            for (int i = 0; i < number_of_rooms; i++)
             {
-                strcpy(rooms_list[index].room_name, receive.text);
-                strcpy(rooms_list[index].usernames[0], username);
+                printf("Nazwa pokoju:\t%s\n", rooms_list[i].room_name);
+                int j = 0;
+                while (rooms_list[i].usernames[j][0] != '\0')
+                {
+                    printf("\tNazwa uzytkownika:\t%s\n", rooms_list[i].usernames[j]);
+                    fflush(stdout);
+                    j++;
+                }
+                
+                
             }
+            
+            // if (index != MAX_rooms)
+            // {
+            //     strcpy(rooms_list[index].room_name, receive.text);
+            //     strcpy(rooms_list[index].usernames[0], username);
+            // }
             
             
             // lseek(fd[0], 0, SEEK_SET);
@@ -271,6 +322,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
+
 
     return 0;
 }

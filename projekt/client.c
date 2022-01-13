@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
         space_available = v_msg1.is_valid;
         if(space_available == false){
             printf("The server is full\n");
+            return 0;
             break;
         }
         
