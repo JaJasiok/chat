@@ -10,8 +10,8 @@
 #include <sys/time.h>
 #include <stdbool.h>
 
-int MAX_users = 5;
-int MAX_rooms = 10;
+const int MAX_users = 5;
+const int MAX_rooms = 10;
 
 // struct history{
 //     char messages[10][1024];
@@ -32,8 +32,8 @@ struct msgbuf
 
 struct users
 {
-    char usernames[5][1024];
-    int ids[5];
+    char usernames[MAX_users][1024];
+    int ids[MAX_users];
     
 } users_list;
 
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
                     strcpy(users_list.usernames[i], receive.text);
                     users_list.ids[i] = 50 + i;
                     user_count++;
-                    printf("whatever\n");
+                    printf("liczab uzytkownikow na serwerze:\t%d\n", user_count);
                     break;
                 }
             }
