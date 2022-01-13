@@ -10,11 +10,15 @@
 #include <sys/time.h>
 #include <stdbool.h>
 
-const int MAX_users = 5;
-const int MAX_rooms = 10;
+
+#define string_size 1024
+#define bool_size sizeof(bool)
+
+#define MAX_users 5
+#define MAX_rooms 10
 
 // struct history{
-//     char messages[10][1024];
+//     char messages[10][string_size];
 //     int i = 0;
 // }
 
@@ -27,20 +31,20 @@ struct validation
 struct msgbuf
 {
     long type;
-    char text[1024];
+    char text[string_size];
 } send, receive;
 
 struct users
 {
-    char usernames[MAX_users][1024];
+    char usernames[MAX_users][string_size];
     int ids[MAX_users];
     
 } users_list;
 
 struct room
 {
-    char room_name[1024];
-    char usernames[5][1024];
+    char room_name[string_size];
+    char usernames[5][string_size];
     
 };
 
@@ -77,14 +81,14 @@ int main(int argc, char *argv[])
     
     for (int i = 0; i < MAX_users; i++)
     {
-        memset(users_list.usernames[i], 0, 1024);
+        memset(users_list.usernames[i], 0, string_size);
     }
     int user_count = 0;
     // printf("%d", user_count);
     // printf("%s", argv[1]);
     
-    int string_size = 1024;
-    int bool_size = sizeof(bool);
+    // int string_size = string_size;
+    // int bool_size = sizeof(bool);
     // char endl[] = "\n";
     
     // int *fd = malloc(2*sizeof(int));
@@ -157,7 +161,7 @@ int main(int argc, char *argv[])
                 msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
                 
             }
-            // char c, buf[1024];
+            // char c, buf[string_size];
             // int index = 0;
             bool valid = true;
             // printf("to ten pierwszy");
@@ -192,7 +196,7 @@ int main(int argc, char *argv[])
             {
                 
                 printf("%d:\t%s\n", users_list.ids[i], users_list.usernames[i]);
-                // char buf[1024];
+                // char buf[string_size];
                 // strcpy(buf, users_list.usernames[i]);
                 if(users_list.usernames[i][0] == '\0')
                 {
@@ -208,7 +212,7 @@ int main(int argc, char *argv[])
             v_msg.type = 300;
             msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
             
-            char username[1024];
+            char username[string_size];
             strcpy(username, receive.text);
             
             receive.type = 1;
