@@ -12,6 +12,7 @@
 
 
 #define string_size 1024
+#define msg_size 3072
 #define bool_size sizeof(bool)
 
 #define MAX_users 5
@@ -26,26 +27,35 @@ struct validation
 {
     long type;
     bool is_valid;
+    int user_id;
 } v_msg;
 
-struct msgbuf
-{
-    long type;
-    char text[string_size];
-} send, receive;
+// struct msgbuf
+// {
+//     long type;
+//     char text[string_size];
+// } receive;
+
+struct msgbuf{
+  long type;
+  // data
+  char sender[string_size];
+  char receiver[string_size];
+  char text[string_size];
+}send, receive;
 
 struct users
 {
     char usernames[MAX_users][string_size];
     int ids[MAX_users];
-    
+
 } users_list;
 
 struct room
 {
     char room_name[string_size];
     char usernames[5][string_size];
-    
+
 };
 
 void add_room(struct room* myarray){
@@ -54,7 +64,7 @@ void add_room(struct room* myarray){
     if (myrealloced_array) {
         myarray = myrealloced_array;
     }else {
-        printf("nie dziala");
+        printf("nie dziala\n");
         //free(myarray);
     // deal with realloc failing because memory could not be allocated.
     }
@@ -62,10 +72,10 @@ void add_room(struct room* myarray){
 
 
 int main(int argc, char *argv[])
-{   
+{
     struct room* rooms_list = malloc(1* sizeof(struct room));
     int number_of_rooms = 1;
-    
+
     // int a = sizeof(rooms_list)/ sizeof(struct room);
     // rooms_list[0].room_name[0] = 'j';
     // rooms_list[0].room_name[1] = 'p';
@@ -78,7 +88,7 @@ int main(int argc, char *argv[])
     // rooms_list[1].room_name[3] = 'p';
     // printf("%s\n", rooms_list[1].room_name);
     // printf("%s\n", rooms_list[0].room_name);
-    
+
     for (int i = 0; i < MAX_users; i++)
     {
         memset(users_list.usernames[i], 0, string_size);
@@ -86,17 +96,17 @@ int main(int argc, char *argv[])
     int user_count = 0;
     // printf("%d", user_count);
     // printf("%s", argv[1]);
-    
+
     // int string_size = string_size;
     // int bool_size = sizeof(bool);
     // char endl[] = "\n";
-    
+
     // int *fd = malloc(2*sizeof(int));
-    
+
     // fd[0] = open("users.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
     // fd[1] = open("rooms.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
-    
-    
+
+
     // size_t myarray_size = 1000;
     // int* myarray = malloc(myarray_size * sizeof(int));
 
@@ -110,7 +120,7 @@ int main(int argc, char *argv[])
     // // deal with realloc failing because memory could not be allocated.
     // }
     // free(myarray);
-    
+
     // printf("1\n");
     int q_number = atoi(argv[1]);
     // printf("1\n");
@@ -122,7 +132,7 @@ int main(int argc, char *argv[])
     // printf("yuiyu\n");
     // printf("dfg\n");
     // char rooms[MAX_rooms][20];
-    
+
     // for (int i = 0; i < MAX_users; i++)
     // {
     //     memset(users[i], '\0', strlen(users[i]));
@@ -137,12 +147,17 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        
+
         // receive.type = 1;
-        msgrcv(id, &receive, string_size, -100, 0);
-        printf("Received username:\t%s\n", receive.text);
-        printf("Received type:\t%ld\n", receive.type);
-        printf("od nowa:\n");
+        msgrcv(id, &receive, msg_size, -100, 0);
+        printf("received username:\t%s\n", receive.text);
+        printf("received username:\t%s\n", receive.sender);
+        printf("received username:\t%s\n", receive.receiver);
+        // fflush(stdout);
+        // printf("received type:\t%ld\n", receive.type);
+        // fflush(stdout);
+        // printf("od nowa:\n");
+        // fflush(stdout);
         switch (receive.type)
         {
         case 1:
@@ -159,7 +174,7 @@ int main(int argc, char *argv[])
                 v_msg.is_valid = true;
                 v_msg.type = 200;
                 msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
-                
+
             }
             // char c, buf[string_size];
             // int index = 0;
@@ -169,13 +184,14 @@ int main(int argc, char *argv[])
             // {
             //    printf("%s\n", users_list.usernames[i]);
             // }
-            
-            
+
+
             for (int i = 0; i < MAX_users; i++)
             {
                 if(strcmp(receive.text, users_list.usernames[i]) == 0)
                 {
-                    printf("nie dobry\n");
+                    // printf("nie dobry\n");
+                    // fflush(stdout);
                     valid = false;
                     v_msg.is_valid = valid;
                     v_msg.type = 300;
@@ -183,42 +199,45 @@ int main(int argc, char *argv[])
                     break;
                 }
             }
-            
+
             // printf("to ten drugi");
-            
+
             if (valid == false)
             {
                 break;
             }
-            
-            
+
+
             for (int i = 0; i < MAX_users; i++)
             {
-                
-                printf("%d:\t%s\n", users_list.ids[i], users_list.usernames[i]);
+
+                // printf("%d:\t%s\n", users_list.ids[i], users_list.usernames[i]);
+                // fflush(stdout);
                 // char buf[string_size];
                 // strcpy(buf, users_list.usernames[i]);
                 if(users_list.usernames[i][0] == '\0')
                 {
                     strcpy(users_list.usernames[i], receive.text);
                     users_list.ids[i] = 50 + i;
+                    v_msg.user_id = users_list.ids[i];
                     user_count++;
-                    printf("liczab uzytkownikow na serwerze:\t%d\n", user_count);
+                    // printf("liczab uzytkownikow na serwerze:\t%d\n", user_count);
+                    // fflush(stdout);
                     break;
                 }
             }
-            
+
             v_msg.is_valid = true;
             v_msg.type = 300;
-            msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
-            
+            msgsnd(id, &v_msg, sizeof(v_msg.is_valid) + sizeof(int), 0);
+
             char username[string_size];
             strcpy(username, receive.text);
-            
+
             receive.type = 1;
-            msgrcv(id, &receive, string_size, receive.type, 0);
+            msgrcv(id, &receive, msg_size, receive.type, 0);
             bool already_added = false;
-            
+
             for (int i = 0; i < number_of_rooms; i++)
             {
                 if(strcmp(rooms_list[i].room_name, receive.text) == 0)
@@ -246,6 +265,7 @@ int main(int argc, char *argv[])
             for (int i = 0; i < number_of_rooms; i++)
             {
                 printf("Nazwa pokoju:\t%s\n", rooms_list[i].room_name);
+                fflush(stdout);
                 int j = 0;
                 while (rooms_list[i].usernames[j][0] != '\0')
                 {
@@ -253,17 +273,17 @@ int main(int argc, char *argv[])
                     fflush(stdout);
                     j++;
                 }
-                
-                
+
+
             }
-            
+            printf("____________\n");
             // if (index != MAX_rooms)
             // {
             //     strcpy(rooms_list[index].room_name, receive.text);
             //     strcpy(rooms_list[index].usernames[0], username);
             // }
-            
-            
+
+
             // lseek(fd[0], 0, SEEK_SET);
             // while ((read(fd[0], &c, 1)) > 0)
             // {
@@ -271,7 +291,7 @@ int main(int argc, char *argv[])
             //     {
             //         strcpy(&buf[index], &c);
             //         index++;
-            //     }           
+            //     }
             //     else
             //     {
             //         if (strcmp(buf, receive.text) == 0)
@@ -320,10 +340,25 @@ int main(int argc, char *argv[])
             //
             //     //stworzenie nowego pliku pokoju i dopisanie go do listy pokoi
             break;
+        case 5:
+            for (int i = 0; i < MAX_users; i++)
+            {
+                if(strcmp(users_list.usernames[i], receive.receiver) == 0)
+                {
+                    strcpy(send.text, receive.text);
+                    strcpy(send.sender, receive.sender);
+                    strcpy(send.receiver, receive.receiver);
+                    send.type = users_list.ids[i];
+                    printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                    break;
+                }
+            }
 
-        default:
-            printf("default\n");
+
             break;
+        // default:
+        //     printf("default\n");
+        //     break;
         }
     }
 

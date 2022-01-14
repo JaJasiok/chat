@@ -10,17 +10,28 @@
 #include <sys/time.h>
 #include <stdbool.h>
 
-// int MAX_length = 50;
+#define string_size 1024
+#define msg_size 3072
+#define bool_size sizeof(bool)
 
-struct msgbuf
-{
-    long type;
-    char text[1024];
-} send, receive;
+struct msgbuf{
+  long type;
+  // data
+  char sender[string_size];
+  char receiver[string_size];
+  char text[string_size];
+}send, receive;
+
+// struct msgbuf
+// {
+//     long type;
+//     char text[string_size];
+// } send, receive;
 
 struct validation{
     long type;
     bool is_valid;
+    int user_id;
 }v_msg1, v_msg2;
 
 // void clear(){
@@ -29,27 +40,28 @@ struct validation{
 
 int main(int argc, char *argv[])
 {
+    int user_id;
     int q_number = atoi(argv[1]);
 
     int id = msgget(q_number, 0644 | IPC_CREAT);
 
     bool space_available = false;
     bool valid_username = false;
-    
-    int string_size = 1024;
-    int bool_size = sizeof(bool);
-    char str[1024];
+
+    char str1[string_size];
 
     while (1)
     {
         printf("Enter username:\n");
-        char str[1024];
-        scanf("%s", str);
-        // printf("%s\n", str);
-        strcpy(send.text, str);
+        char str1[string_size];
+        scanf("%s", str1);
+        printf("%s\n", str1);
+        strcpy(send.text, str1);
         send.type = 1;
-        msgsnd(id, &send, strlen(send.text) + 1, 0);
-        // printf("%d\n", msgsnd(id, &send, strlen(send.text) + 1, 0));
+        memset(send.receiver, 0, string_size);
+        memset(send.sender, 0, string_size);
+        msgsnd(id, &send, msg_size, 0);
+        // printf("%d\n", msgsnd(id, &send, msg_size, 0));
         v_msg1.type = 200;
         msgrcv(id, &v_msg1, bool_size, v_msg1.type, 0);
         space_available = v_msg1.is_valid;
@@ -58,15 +70,16 @@ int main(int argc, char *argv[])
             return 0;
             break;
         }
-        
+
         v_msg2.type = 300;
-        msgrcv(id, &v_msg2, bool_size, v_msg2.type, 0);
+        msgrcv(id, &v_msg2, bool_size + sizeof(int), v_msg2.type, 0);
         valid_username = v_msg2.is_valid;
-        
+        user_id = v_msg2.user_id;
+
         if (valid_username == true)
         {
             printf("Access granted.\n");
-            printf("Welcome!\n");
+            printf("Welcome!\nYour Id is %d\n", user_id);
             break;
         }
         else
@@ -77,30 +90,57 @@ int main(int argc, char *argv[])
     // execlp("clear", "clear", NULL);
 
     // valid = false;
-    
+
+    char username[string_size];
+    strcpy(username, send.text);
+    printf("%s\n", username);
+
+
     printf("Enter room name:\n");
-    scanf("%s", str);
-    strcpy(send.text, str);
+    scanf("%s", str1);
+    strcpy(send.text, str1);
     send.type = 1;
-    msgsnd(id, &send, strlen(send.text) + 1, 0);
-    
-    // if (fork() == 0)
-    // {
-    //     while (1)
-    //     {
-    //         // wysyłanie wiadomości
-    //     }
-    // }
-    // else
-    // {
-    //     while (1)
-    //     {
-    //         // odbieranie wiadomości
-    //     }
-    // }
-    
-    
-    
+    msgsnd(id, &send, msg_size, 0);
+
+    char str2[string_size];
+
+    if (fork() == 0)
+    {
+        while (1)
+        {
+            memset(str1, 0, string_size);
+            memset(str2, 0, string_size);
+            scanf("%s %s", str1, str2);
+            if(strcmp("private", str1) == 0)
+            {
+                send.type = 5;
+                strcpy(send.receiver, str2);
+                memset(str1, 0, string_size);
+                scanf("%s", str2);
+                strcpy(send.text, str2);
+                strcpy(send.sender, username);
+            }
+
+
+
+            // printf("%d\n", msgsnd(id, &send, msg_size, 0));
+            // printf("received username:\t%s\n", send.text);
+            // printf("received username:\t%s\n", send.sender);
+            // printf("received username:\t%s\n", send.receiver);
+        }
+    }
+    else
+    {
+        while (1)
+        {
+            // printf("%ld\n", msgrcv(id, &receive, msg_size, user_id, 0));
+            msgrcv(id, &receive, msg_size, user_id, 0);
+            printf("from %s to %s: \n%s\n", receive.sender, receive.receiver, receive.text);
+        }
+    }
+
+
+
 
 
     return 0;
