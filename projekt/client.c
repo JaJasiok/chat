@@ -111,8 +111,41 @@ int main(int argc, char *argv[])
             memset(str1, 0, string_size);
             memset(str2, 0, string_size);
             scanf("%s %s", str1, str2);
-            if(strcmp("private", str1) == 0)
+            // scanf("%s", str2);
+            
+            if(strcmp("exit", str1) == 0)
             {
+                // scanf("%s", str2);
+                send.type = 2;
+                strcpy(send.receiver, str2);
+                strcpy(send.text, str2);
+                strcpy(send.sender, username);
+                msgsnd(id, &send, msg_size, 0);
+                wait(1);
+                return 0;
+            }
+            
+            else if(strcmp("enter", str1) == 0)
+            {
+                // scanf("%s", str2);
+                send.type = 3;
+                strcpy(send.receiver, str2);
+                strcpy(send.text, str2);
+                strcpy(send.sender, username);
+            }
+            
+            else if(strcmp("logout", str1) == 0)
+            {
+                // scanf("%s", str2);
+                send.type = 4;
+                strcpy(send.receiver, str2);
+                strcpy(send.text, str2);
+                strcpy(send.sender, username);
+            }
+            
+            else if(strcmp("private", str1) == 0)
+            {
+                // scanf("%s", str2);
                 send.type = 5;
                 strcpy(send.receiver, str2);
                 memset(str1, 0, string_size);
@@ -120,13 +153,73 @@ int main(int argc, char *argv[])
                 strcpy(send.text, str2);
                 strcpy(send.sender, username);
             }
+            
+            else if(strcmp("room", str1) == 0)
+            {
+                // scanf("%s", str2);
+                send.type = 6;
+                strcpy(send.receiver, str2);
+                memset(str1, 0, string_size);
+                scanf("%s", str2);
+                strcpy(send.text, str2);
+                strcpy(send.sender, username);
+            }
+            
+            else if(strcmp("rooms", str1) == 0)
+            {
+                // scanf("%s", str2);
+                send.type = 7;
+                strcpy(send.receiver, str2);
+                strcpy(send.text, str2);
+                strcpy(send.sender, username);
+            }
+            
+            else if(strcmp("in_room", str1) == 0)
+            {
+                // scanf("%s", str2);
+                send.type = 8;
+                strcpy(send.receiver, str2);
+                strcpy(send.text, str2);
+                strcpy(send.sender, username);
+            }
+            
+            else if(strcmp("on_server", str1) == 0)
+            {
+                // scanf("%s", str2);
+                send.type = 9;
+                strcpy(send.receiver, str2);
+                strcpy(send.text, str2);
+                strcpy(send.sender, username);
+            }
+            
+            else if(strcmp("history", str1) == 0)
+            {
+                // scanf("%s", str2);
+                send.type = 10;
+                strcpy(send.receiver, str2);
+                strcpy(send.text, str2);
+                strcpy(send.sender, username);
+            }
+            
+            else if(strcmp("help", str1) == 0)
+            {
+                // pisze komendy i ich wytłumaczenie
+            }
+            
+            else
+            {
+                printf("Unknown command, try \"help\" for help\n");
+            }
+            
 
-
-
-            // printf("%d\n", msgsnd(id, &send, msg_size, 0));
-            // printf("received username:\t%s\n", send.text);
-            // printf("received username:\t%s\n", send.sender);
-            // printf("received username:\t%s\n", send.receiver);
+            if (send.type > 1)
+            {
+                msgsnd(id, &send, msg_size, 0);
+                // printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                // printf("received username:\t%s\n", send.text);
+                // printf("received username:\t%s\n", send.sender);
+                // printf("received username:\t%s\n", send.receiver);
+            }
         }
     }
     else

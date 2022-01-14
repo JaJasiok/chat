@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
     //     memset(rooms[i], '\0', strlen(rooms[i]));
     // }
     // printf("to jednak nie to\n");
-    // char commands = {"exit", "enter", "logout", "private", "room", "rooms", "in_room", "on_server", "help", "history"};
+    // char commands = {"exit", "enter", "logout", "private", "room", "rooms", "in_room", "on_server", "history", "help"};
 
     while (1)
     {
@@ -340,6 +340,19 @@ int main(int argc, char *argv[])
             //
             //     //stworzenie nowego pliku pokoju i dopisanie go do listy pokoi
             break;
+            
+        case 2:
+            // usunięcie użytkownika z serwera i pokoi
+            break;
+            
+        case 3:
+            // dodanie użytkownika do pokoju
+            break;
+            
+        case 4:
+            // usunięcie użytkownika z pokoju
+            break;
+            
         case 5:
             for (int i = 0; i < MAX_users; i++)
             {
@@ -354,8 +367,26 @@ int main(int argc, char *argv[])
                 }
             }
 
-
+        case 6:
+            // wytsłanie wiadomości na pokój
             break;
+            
+        case 7:
+            // wypisanie użytkownikowi listy pokoi
+            break;
+
+        case 8:
+            // wypisnie użytkownikowi użytkowników w pokoju
+            break;
+
+        case 9:
+            // wypisnie użytkownikowi użytkowników na serwerze
+            break;
+
+        case 10:
+            //wypisnie użytkownikowi historię wiadomości z pokoju
+            break;
+
         // default:
         //     printf("default\n");
         //     break;
