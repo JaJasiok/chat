@@ -105,25 +105,29 @@ int main(int argc, char *argv[])
 
     char str2[string_size];
 
-    if (fork() == 0)
+    if (fork() != 0)
     {
         while (1)
         {
             memset(str1, 0, string_size);
             memset(str2, 0, string_size);
-            scanf("%s %s", str1, str2);
-            // scanf("%s", str2);
+            // scanf("%s %s",  str1, str2);
+            scanf("%s", str1);
+            if(strcmp(str1, "exit") != 0 && strcmp(str1, "in_room") != 0 && strcmp(str1, "on_server") != 0 &&  strcmp(str1, "help") != 0){
+                scanf("%s", str2);
+            }
+            
             
             if(strcmp("exit", str1) == 0)
             {
                 // scanf("%s", str2);
                 send.type = 2;
-                strcpy(send.receiver, str2);
+                strcpy(send.receiver, username);
                 strcpy(send.text, str2);
                 strcpy(send.sender, username);
                 msgsnd(id, &send, msg_size, 0);
                 sleep(1);
-                return 0;
+                kill(0, SIGKILL);
             }
             
             else if(strcmp("enter", str1) == 0)
@@ -150,6 +154,7 @@ int main(int argc, char *argv[])
                 send.type = 5;
                 strcpy(send.receiver, str2);
                 memset(str1, 0, string_size);
+                // scanf("%[^\n]", str2);
                 scanf("%s", str2);
                 strcpy(send.text, str2);
                 strcpy(send.sender, username);

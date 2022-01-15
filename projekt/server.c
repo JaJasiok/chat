@@ -342,9 +342,23 @@ int main(int argc, char *argv[])
             break;
             
         case 2:
-            // usunięcie użytkownika z serwera i pokoi
+            for (int i = 0; i < MAX_users; i++)
+            {
+                if(strcmp(users_list.usernames[i], receive.sender) == 0)
+                {
+                    memset(users_list.usernames[i], '\0', string_size);
+                    user_count--;
+                    break;
+                }
+            }
+            for(int i = 0; i < number_of_rooms; i++){
+                for(int j = 0; j < MAX_users; j++){
+                    if(strcmp(rooms_list[i].usernames[j], receive.sender) == 0){
+                        memset(rooms_list[i].usernames[j], '\0', string_size);
+                    }
+                }
+            }
             break;
-            
         case 3:
             // dodanie użytkownika do pokoju
             break;
@@ -353,19 +367,47 @@ int main(int argc, char *argv[])
             // usunięcie użytkownika z pokoju
             break;
             
-        case 5:
-            for (int i = 0; i < MAX_users; i++)
+        case 5: ;
+            bool already_sent = false;
+            for (int i = 0; i < number_of_rooms; i++)
             {
-                if(strcmp(users_list.usernames[i], receive.receiver) == 0)
+                if (already_sent == false)
                 {
-                    strcpy(send.text, receive.text);
-                    strcpy(send.sender, receive.sender);
-                    strcpy(send.receiver, receive.receiver);
-                    send.type = users_list.ids[i];
-                    printf("%d\n", msgsnd(id, &send, msg_size, 0));
-                    break;
+                    for (int j = 0; j < MAX_users; j++)
+                    {
+                        if(strcmp(rooms_list[i].usernames[j], receive.sender) == 0)
+                        {
+                            for (int k = 0; k < MAX_users; k++)
+                            {
+                                if(strcmp(rooms_list[i].usernames[k], receive.receiver) == 0)
+                                {
+                                    strcpy(send.text, receive.text);
+                                    strcpy(send.sender, receive.sender);
+                                    strcpy(send.receiver, receive.receiver);
+                                    for (int l = 0; l < MAX_users; l++)
+                                    {
+                                        if(strcmp(users_list.usernames[l], receive.receiver) == 0)
+                                        {
+                                            send.type = users_list.ids[l];
+                                            printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                                            break;
+                                        }
+                                    }
+                                    already_sent = true;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
                 }
+                else
+                {
+                   break; 
+                }
+                
             }
+            break;
 
         case 6:
             // wytsłanie wiadomości na pokój
