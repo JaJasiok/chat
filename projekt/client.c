@@ -9,6 +9,7 @@
 #include <sys/msg.h>
 #include <sys/time.h>
 #include <stdbool.h>
+#include <sys/wait.h>
 
 #define string_size 1024
 #define msg_size 3072
@@ -121,7 +122,7 @@ int main(int argc, char *argv[])
                 strcpy(send.text, str2);
                 strcpy(send.sender, username);
                 msgsnd(id, &send, msg_size, 0);
-                wait(1);
+                sleep(1);
                 return 0;
             }
             
