@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
             memset(str2, 0, string_size);
             // scanf("%s %s",  str1, str2);
             scanf("%s", str1);
-            if(strcmp(str1, "exit") != 0 && strcmp(str1, "in_room") != 0 && strcmp(str1, "on_server") != 0 &&  strcmp(str1, "help") != 0 &&  strcmp(str1, "rooms") != 0){
+            if(strcmp(str1, "exit") != 0 && strcmp(str1, "on_server") != 0 &&  strcmp(str1, "help") != 0 &&  strcmp(str1, "rooms") != 0){
                 scanf("%s", str2);
             }
             
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
                 //         break;
                 //     }  
                 // }
-                // scanf("%s", str2);
+                scanf("%s", str2);
                 // fgets(str2, 1024, stdin);
                 strcpy(send.text, str2);
                 strcpy(send.sender, username);

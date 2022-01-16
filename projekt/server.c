@@ -71,6 +71,7 @@ void add_room(struct room* myarray){
 }
 
 
+
 int main(int argc, char *argv[])
 {
     struct room* rooms_list = malloc(1* sizeof(struct room));
@@ -464,11 +465,31 @@ int main(int argc, char *argv[])
 
         case 6:
             // wytsłanie wiadomości na pokój
+            strcpy(send.sender, receive.sender);
+            strcpy(send.receiver, receive.receiver);
+            for(int i = 0; i < number_of_rooms; i++){
+                if(strcmp(receive.receiver, rooms_list[i].room_name) == 0){
+                    for(int l = 0; l < MAX_users; l++){
+                        if(strcmp(receive.sender, rooms_list[i].usernames[l]) == 0){
+                            for(int j = 0; j < MAX_users; j++){
+                                for(int k = 0; k < MAX_users; k++){
+                                    if(strcmp(rooms_list[i].usernames[j], users_list.usernames[k]) == 0){
+                                        send.type = users_list.ids[k];
+                                        strcpy(send.text, receive.text);
+                                        msgsnd(id, &send, msg_size, 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             break;
             
         case 7:
             strcpy(send.receiver, receive.sender);
             strcpy(send.sender, "server");
+            memset(send.text, '\0', string_size);
             for (int i = 0; i < user_count; i++)
             {
                 if (strcmp(receive.sender, users_list.usernames[i]) == 0)
@@ -493,8 +514,31 @@ int main(int argc, char *argv[])
             msgsnd(id, &send, msg_size, 0);
             break;
 
-        case 8:
+        case 8: ;
             // wypisnie użytkownikowi użytkowników w pokoju
+            char msg_2[string_size];
+            memset(msg_2, '\0', string_size);
+            for(int i = 0; i < number_of_rooms; i++){
+                if(strcmp(rooms_list[i].room_name, receive.text) == 0){
+                    for(int j = 0; j < MAX_users; j++){
+                        strcat(msg_2, rooms_list[i].usernames[j]);
+                        strcat(msg_2, " "); 
+                    }
+                }
+            }
+
+
+            strcpy(send.text, msg_2);
+            for (int l = 0; l < MAX_users; l++)
+            {
+                if(strcmp(users_list.usernames[l], receive.sender) == 0)
+                {
+                    send.type = users_list.ids[l];
+                    strcpy(send.sender, "server");
+                    printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                    break;
+                }
+            }
             break;
 
         case 9: ;
