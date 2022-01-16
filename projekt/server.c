@@ -404,7 +404,20 @@ int main(int argc, char *argv[])
             break;
             
         case 4:
-            // usunięcie użytkownika z pokoju
+            for(int i = 0; i <  number_of_rooms; i++)
+            {
+                if(strcmp(rooms_list[i].room_name, receive.text) == 0)
+                {
+                    for(int j = 0; j < MAX_users; j++)
+                    {
+                        if(strcmp(rooms_list[i].usernames[j], receive.sender) == 0)
+                        {
+                            memset(rooms_list[i].usernames[j], '\0', string_size);
+                            break;
+                        }
+                    }
+                }
+            }
             break;
             
         case 5: ;
@@ -454,15 +467,57 @@ int main(int argc, char *argv[])
             break;
             
         case 7:
-            // wypisanie użytkownikowi listy pokoi
+            strcpy(send.receiver, receive.sender);
+            strcpy(send.sender, "server");
+            for (int i = 0; i < user_count; i++)
+            {
+                if (strcmp(receive.sender, users_list.usernames[i]) == 0)
+                {
+                    send.type = users_list.ids[i];
+                    break;
+                }
+            }
+            int index = 0;
+            for (int i = 0; i < number_of_rooms; i++)
+            {
+                for (int j = 0; j < strlen(rooms_list[i].room_name); j++)
+                {
+                    // printf("%s\n", rooms_list[i].room_name);
+                    send.text[index] = rooms_list[i].room_name[j];
+                    index ++;
+                }
+                send.text[index] = ' ';
+                index ++;
+            }
+            // printf("%d\n", msgsnd(id, &send, msg_size, 0));
+            msgsnd(id, &send, msg_size, 0);
             break;
 
         case 8:
             // wypisnie użytkownikowi użytkowników w pokoju
             break;
 
-        case 9:
-            // wypisnie użytkownikowi użytkowników na serwerze
+        case 9: ;
+            char msg[string_size];
+            memset(msg, '\0', string_size);
+            for(int i = 0; i < MAX_users; i++){
+                if(users_list.usernames[i][0] != '\0'){
+                    strcat(msg, users_list.usernames[i]);
+                    strcat(msg, " "); 
+                }
+            }
+            strcpy(send.text, msg);
+            for (int l = 0; l < MAX_users; l++)
+            {
+                if(strcmp(users_list.usernames[l], receive.sender) == 0)
+                {
+                    send.type = users_list.ids[l];
+                    strcpy(send.sender, "server");
+                    printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                    break;
+                }
+            }
+            break;
             break;
 
         case 10:

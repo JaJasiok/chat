@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
             memset(str2, 0, string_size);
             // scanf("%s %s",  str1, str2);
             scanf("%s", str1);
-            if(strcmp(str1, "exit") != 0 && strcmp(str1, "in_room") != 0 && strcmp(str1, "on_server") != 0 &&  strcmp(str1, "help") != 0){
+            if(strcmp(str1, "exit") != 0 && strcmp(str1, "in_room") != 0 && strcmp(str1, "on_server") != 0 &&  strcmp(str1, "help") != 0 &&  strcmp(str1, "rooms") != 0){
                 scanf("%s", str2);
             }
             
@@ -153,9 +153,18 @@ int main(int argc, char *argv[])
                 // scanf("%s", str2);
                 send.type = 5;
                 strcpy(send.receiver, str2);
-                memset(str1, 0, string_size);
-                // scanf("%[^\n]%*c", str2);
-                scanf("%s", str2);
+                memset(str2, 0, string_size);
+                // // scanf("%[^\n]%*c", str2);
+                // fflush(stdin);
+                // for (int i = 0; i < string_size-1; i++)
+                // {
+                //     scanf("%c", &str2[i]);
+                //     if (str2[i] == '\n')
+                //     {
+                //         break;
+                //     }  
+                // }
+                // scanf("%s", str2);
                 // fgets(str2, 1024, stdin);
                 strcpy(send.text, str2);
                 strcpy(send.sender, username);
@@ -210,11 +219,13 @@ int main(int argc, char *argv[])
             
             else if(strcmp("help", str1) == 0)
             {
+                send.type = -1;
                 // pisze komendy i ich wytłumaczenie
             }
             
             else
             {
+                send.type = -1;
                 printf("Unknown command, try \"help\" for help\n");
             }
             
@@ -235,7 +246,14 @@ int main(int argc, char *argv[])
         {
             // printf("%ld\n", msgrcv(id, &receive, msg_size, user_id, 0));
             msgrcv(id, &receive, msg_size, user_id, 0);
-            printf("from %s to %s: \n%s\n", receive.sender, receive.receiver, receive.text);
+            if (strcmp(receive.sender, "server") == 0)
+            {
+                printf("%s\n", receive.text);
+            }
+            else
+            {
+                printf("from %s to %s: \n%s\n", receive.sender, receive.receiver, receive.text);
+            } 
         }
     }
 
