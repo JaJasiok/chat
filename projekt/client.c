@@ -154,8 +154,9 @@ int main(int argc, char *argv[])
                 send.type = 5;
                 strcpy(send.receiver, str2);
                 memset(str1, 0, string_size);
-                // scanf("%[^\n]", str2);
+                // scanf("%[^\n]%*c", str2);
                 scanf("%s", str2);
+                // fgets(str2, 1024, stdin);
                 strcpy(send.text, str2);
                 strcpy(send.sender, username);
             }

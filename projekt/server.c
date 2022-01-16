@@ -359,8 +359,48 @@ int main(int argc, char *argv[])
                 }
             }
             break;
-        case 3:
+        case 3: ;
             // dodanie użytkownika do pokoju
+            bool already_added_2 = false;
+
+            for (int i = 0; i < number_of_rooms; i++)
+            {
+                if(strcmp(rooms_list[i].room_name, receive.receiver) == 0)
+                {
+                    for (int j = 0; j < MAX_users; j++)
+                    {
+                        if(rooms_list[i].usernames[j][0] == '\0')
+                        {
+                            strcpy(rooms_list[i].usernames[j], receive.sender);
+                            already_added_2 = true;
+                            break;
+                        }
+                    }
+                }
+                if(rooms_list[i].room_name[0] == '\0' && already_added_2 != true)
+                {
+                    // index = 1;
+                    strcpy(rooms_list[i].room_name, receive.text);
+                    strcpy(rooms_list[i].usernames[0], receive.sender);
+                    add_room(rooms_list);
+                    number_of_rooms += 1;
+                    break;
+                }
+            }
+            for (int i = 0; i < number_of_rooms; i++)
+            {
+                printf("Nazwa pokoju:\t%s\n", rooms_list[i].room_name);
+                fflush(stdout);
+                int j = 0;
+                while (rooms_list[i].usernames[j][0] != '\0')
+                {
+                    printf("\tNazwa uzytkownika:\t%s\n", rooms_list[i].usernames[j]);
+                    fflush(stdout);
+                    j++;
+                }
+
+
+            }
             break;
             
         case 4:
