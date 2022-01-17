@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
             memset(str2, 0, string_size);
             // scanf("%s %s",  str1, str2);
             scanf("%s", str1);
-            if(strcmp(str1, "exit") != 0 && strcmp(str1, "on_server") != 0 &&  strcmp(str1, "help") != 0 &&  strcmp(str1, "rooms") != 0){
+            if(strcmp(str1, "enter") == 0 && strcmp(str1, "logout") == 0 &&  strcmp(str1, "private") == 0 &&  strcmp(str1, "room") == 0){
                 scanf("%s", str2);
             }
             
@@ -164,8 +164,19 @@ int main(int argc, char *argv[])
                 //         break;
                 //     }  
                 // }
-                scanf("%s", str2);
+                char character;
+                scanf("%c", &character);
+                fflush(stdin);
+                scanf("%[^\n]%*c", str2);
+                // scanf("%s", str2);
+                // scanf("%s", str2);
                 // fgets(str2, 1024, stdin);
+                // char *buffer;
+                // size_t buf_size = 1024;
+                // size_t characters;
+                // buffer = (char *)malloc(buf_size * sizeof(char));
+                // characters = getline(&buffer, &buf_size, stdin);
+                // strcpy(send.text, &characters);
                 strcpy(send.text, str2);
                 strcpy(send.sender, username);
             }
@@ -176,7 +187,10 @@ int main(int argc, char *argv[])
                 send.type = 6;
                 strcpy(send.receiver, str2);
                 memset(str1, 0, string_size);
-                scanf("%s", str2);
+                char character;
+                scanf("%c", &character);
+                fflush(stdin);
+                scanf("%[^\n]%*c", str2);
                 strcpy(send.text, str2);
                 strcpy(send.sender, username);
             }
@@ -221,6 +235,15 @@ int main(int argc, char *argv[])
             {
                 send.type = -1;
                 // pisze komendy i ich wytłumaczenie
+                printf("exit - ends program\n");
+                printf("enter <roomname> - enters room with a given name if exist, otherwaise creates one\n");
+                printf("logout <roomname> - exits room with a given name\n");
+                printf("private <username> - sends private message to a user\n");
+                printf("room <roomname> - sends message to a room\n");
+                printf("rooms - displays all rooms on server\n");
+                printf("in_room <roomname> - displays all users in room\n");
+                printf("on_server - displays all users on server\n");
+                printf("history <roomanme> - displays last 10 messages from room\n");
             }
             
             else
