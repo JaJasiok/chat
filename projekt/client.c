@@ -113,7 +113,8 @@ int main(int argc, char *argv[])
             memset(str2, 0, string_size);
             // scanf("%s %s",  str1, str2);
             scanf("%s", str1);
-            if(strcmp(str1, "enter") == 0 && strcmp(str1, "logout") == 0 &&  strcmp(str1, "private") == 0 &&  strcmp(str1, "room") == 0){
+            if(strcmp(str1, "enter") == 0 || strcmp(str1, "logout") == 0 ||  strcmp(str1, "private") == 0 ||  strcmp(str1, "room") == 0)
+            {
                 scanf("%s", str2);
             }
             
