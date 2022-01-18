@@ -10,19 +10,28 @@
 #include <sys/time.h>
 #include <stdbool.h>
 #include <sys/wait.h>
+#include <time.h>
 
 
 #define string_size 1024
-#define msg_size 3072
+#define msg_size 3084
 #define bool_size sizeof(bool)
 
 #define MAX_users 5
 #define MAX_rooms 10
 
-// struct history{
-//     char messages[10][string_size];
-//     int i = 0;
-// }
+struct tim{
+    int hour;
+    int minute;
+    int sec;
+};
+
+struct history{
+    char messages[10][string_size];
+    char usernames[10][string_size];
+    struct tim date[10];
+    
+};
 
 struct validation
 {
@@ -31,15 +40,11 @@ struct validation
     int user_id;
 } v_msg;
 
-// struct msgbuf
-// {
-//     long type;
-//     char text[string_size];
-// } receive;
+
 
 struct msgbuf{
   long type;
-  // data
+  struct tim date;
   char sender[string_size];
   char receiver[string_size];
   char text[string_size];
@@ -60,109 +65,90 @@ struct room
 };
 
 void add_room(struct room* myarray){
+    // int myarray_size = sizeof(struct room) * l;
     int myarray_size = (sizeof(myarray) / sizeof(myarray[0])) + 1;
     struct room* myrealloced_array = realloc(myarray, myarray_size * sizeof( struct room));
     if (myrealloced_array) {
         myarray = myrealloced_array;
     }else {
         printf("nie dziala\n");
-        //free(myarray);
-    // deal with realloc failing because memory could not be allocated.
     }
 }
+
+void add_history_struct(struct history* myarray, int l){
+    // int myarray_size = (sizeof(myarray) / sizeof(myarray[0])) + 1;
+    int myarray_size =  l + 1;
+    struct history* myrealloced_array = realloc(myarray, myarray_size * sizeof( struct history) * sizeof(struct tim));
+    if (myrealloced_array) {
+        myarray = myrealloced_array;
+    }else {
+        printf("nie dziala\n");
+    }
+}
+
+void add_msg_to_history(struct history *h, struct msgbuf m){
+    int hst = 10;
+    for(int i = 0; i < hst; i++){
+        if(h->messages[i][0] == '\0'){
+            
+            strcpy(h->messages[i], m.text);
+            strcpy(h->usernames[i], m.sender);
+            h->date[i].hour = m.date.hour;
+            h->date[i].minute = m.date.minute;
+            h->date[i].sec = m.date.sec;
+            return;
+            
+        }
+        
+    }
+    
+    for(int i = 0 ; i < hst - 1; i++){
+        strcpy(h->messages[i], h->messages[i + 1]);
+        strcpy(h->usernames[i], h->usernames[i + 1]);
+        h->date[i].hour = h->date[i + 1].hour;
+        h->date[i].minute = h->date[i + 1].minute;
+        h->date[i].sec = h->date[i + 1].sec;
+
+    }
+    strcpy(h->messages[hst - 1], m.text);
+    strcpy(h->usernames[hst - 1], m.sender);
+    h->date[hst - 1].hour = m.date.hour;
+    h->date[hst - 1].minute = m.date.minute;
+    h->date[hst - 1].sec = m.date.sec;
+}
+
 
 
 int main(int argc, char *argv[])
 {
     struct room* rooms_list = malloc(1* sizeof(struct room));
     int number_of_rooms = 1;
-
-    // int a = sizeof(rooms_list)/ sizeof(struct room);
-    // rooms_list[0].room_name[0] = 'j';
-    // rooms_list[0].room_name[1] = 'p';
-    // printf("%s\n", rooms_list[0].room_name);
-    // add_room(rooms_list);
-    // int b = sizeof(rooms_list)/ sizeof(struct room);
-    // rooms_list[1].room_name[0] = 'h';
-    // rooms_list[1].room_name[1] = 'w';
-    // rooms_list[1].room_name[2] = 'd';
-    // rooms_list[1].room_name[3] = 'p';
-    // printf("%s\n", rooms_list[1].room_name);
-    // printf("%s\n", rooms_list[0].room_name);
+    struct history* history_structs = malloc(1* sizeof(struct history));
+    int number_of_history_structs = 1;
+    
+    for(int i = 0; i <  10; i++){
+        memset(history_structs[0].messages[i], '\0', string_size);
+    }
+    
 
     for (int i = 0; i < MAX_users; i++)
     {
         memset(users_list.usernames[i], 0, string_size);
     }
     int user_count = 0;
-    // printf("%d", user_count);
-    // printf("%s", argv[1]);
-
-    // int string_size = string_size;
-    // int bool_size = sizeof(bool);
-    // char endl[] = "\n";
-
-    // int *fd = malloc(2*sizeof(int));
-
-    // fd[0] = open("users.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
-    // fd[1] = open("rooms.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
-
-
-    // size_t myarray_size = 1000;
-    // int* myarray = malloc(myarray_size * sizeof(int));
-
-    // myarray_size += 1000;
-    // int* myrealloced_array = realloc(myarray, myarray_size * sizeof(int));
-    // if (myrealloced_array) {
-    //     myarray = myrealloced_array;
-    // }else {
-    //     printf("nie dziala");
-    //     free(myarray);
-    // // deal with realloc failing because memory could not be allocated.
-    // }
-    // free(myarray);
-
-    // printf("1\n");
     int q_number = atoi(argv[1]);
-    // printf("1\n");
-    // int id = 3;
     int id = msgget(q_number, 0644 | IPC_CREAT);
-    // printf("1\n");
-    // char users[MAX_rooms][20];
-    // printf("qweq\n");
-    // printf("yuiyu\n");
-    // printf("dfg\n");
-    // char rooms[MAX_rooms][20];
-
-    // for (int i = 0; i < MAX_users; i++)
-    // {
-    //     memset(users[i], '\0', strlen(users[i]));
-    // }
-
-    // for (int i = 0; i < MAX_rooms; i++)
-    // {
-    //     memset(rooms[i], '\0', strlen(rooms[i]));
-    // }
-    // printf("to jednak nie to\n");
-    // char commands = {"exit", "enter", "logout", "private", "room", "rooms", "in_room", "on_server", "history", "help"};
     if (fork() == 0)
     {
         while (1)
         {   
-            // receive.type = 1;
             msgrcv(id, &receive, msg_size, -100, 0);
-            printf("received username:\t%s\n", receive.text);
-            printf("received username:\t%s\n", receive.sender);
-            printf("received username:\t%s\n", receive.receiver);
-            // fflush(stdout);
-            // printf("received type:\t%ld\n", receive.type);
-            // fflush(stdout);
-            // printf("od nowa:\n");
-            // fflush(stdout);
+            // printf("received msg:\t%s\n", receive.text);
+            // printf("received sender:\t%s\n", receive.sender);
+            // printf("received receiver:\t%s\n", receive.receiver);
             switch (receive.type)
             {
                 case 1:
-                    // printf("case one");
                     if (user_count == MAX_users)
                     {
                         v_msg.is_valid = false;
@@ -177,22 +163,14 @@ int main(int argc, char *argv[])
                         msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
 
                     }
-                    // char c, buf[string_size];
-                    // int index = 0;
                     bool valid = true;
-                    // printf("to ten pierwszy");
-                    // for (int i = 0; i < MAX_users; i++)
-                    // {
-                    //    printf("%s\n", users_list.usernames[i]);
-                    // }
+                    
 
 
                     for (int i = 0; i < MAX_users; i++)
                     {
                         if(strcmp(receive.text, users_list.usernames[i]) == 0)
                         {
-                            // printf("nie dobry\n");
-                            // fflush(stdout);
                             valid = false;
                             v_msg.is_valid = valid;
                             v_msg.type = 300;
@@ -201,7 +179,6 @@ int main(int argc, char *argv[])
                         }
                     }
 
-                    // printf("to ten drugi");
 
                     if (valid == false)
                     {
@@ -212,18 +189,12 @@ int main(int argc, char *argv[])
                     for (int i = 0; i < MAX_users; i++)
                     {
 
-                        // printf("%d:\t%s\n", users_list.ids[i], users_list.usernames[i]);
-                        // fflush(stdout);
-                        // char buf[string_size];
-                        // strcpy(buf, users_list.usernames[i]);
                         if(users_list.usernames[i][0] == '\0')
                         {
                             strcpy(users_list.usernames[i], receive.text);
                             users_list.ids[i] = 50 + i;
                             v_msg.user_id = users_list.ids[i];
                             user_count++;
-                            // printf("liczab uzytkownikow na serwerze:\t%d\n", user_count);
-                            // fflush(stdout);
                             break;
                         }
                     }
@@ -255,90 +226,36 @@ int main(int argc, char *argv[])
                         }
                         if(rooms_list[i].room_name[0] == '\0' && already_added != true)
                         {
-                            // index = 1;
                             strcpy(rooms_list[i].room_name, receive.text);
                             strcpy(rooms_list[i].usernames[0], username);
-                            add_room(rooms_list);
                             number_of_rooms += 1;
+                            add_room(rooms_list);
+                            
+                            
+                            number_of_history_structs += 1;
+                            // add_history_struct(history_structs, number_of_history_structs);
+                            for(int i = 0; i <  10; i++){
+                                memset(history_structs[number_of_history_structs - 1].messages[i], '\0', string_size);
+                            }
                             break;
                         }
                     }
-                    for (int i = 0; i < number_of_rooms; i++)
-                    {
-                        printf("Nazwa pokoju:\t%s\n", rooms_list[i].room_name);
-                        fflush(stdout);
-                        int j = 0;
-                        while (rooms_list[i].usernames[j][0] != '\0')
-                        {
-                            printf("\tNazwa uzytkownika:\t%s\n", rooms_list[i].usernames[j]);
-                            fflush(stdout);
-                            j++;
-                        }
+                    // for (int i = 0; i < number_of_rooms; i++)
+                    // {
+                    //     printf("Nazwa pokoju:\t%s\n", rooms_list[i].room_name);
+                    //     fflush(stdout);
+                    //     int j = 0;
+                    //     while (rooms_list[i].usernames[j][0] != '\0')
+                    //     {
+                    //         printf("\tNazwa uzytkownika:\t%s\n", rooms_list[i].usernames[j]);
+                    //         fflush(stdout);
+                    //         j++;
+                    //     }
 
 
-                    }
-                    printf("____________\n");
-                    // if (index != MAX_rooms)
-                    // {
-                    //     strcpy(rooms_list[index].room_name, receive.text);
-                    //     strcpy(rooms_list[index].usernames[0], username);
                     // }
-
-                    // lseek(fd[0], 0, SEEK_SET);
-                    // while ((read(fd[0], &c, 1)) > 0)
-                    // {
-                    //     if (c != '\n')
-                    //     {
-                    //         strcpy(&buf[index], &c);
-                    //         index++;
-                    //     }
-                    //     else
-                    //     {
-                    //         if (strcmp(buf, receive.text) == 0)
-                    //         {
-                    //             valid = false;
-                    //             v_msg.is_valid = valid;
-                    //             v_msg.type = 3;
-                    //             msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
-                    //             break;
-                    //         }
-                    //         index = 0;
-                    //         memset(buf, 0, strlen(buf));
-                    //     }
-                    // }
-                    // if (valid == true)
-                    // {
-                    //     write(fd[0], receive.text, strlen(receive.text));
-                    //     write(fd[0], endl, 1);
-                    //     v_msg.is_valid = true;
-                    //     v_msg.type = 3;
-                    //     msgsnd(id, &v_msg, sizeof(v_msg.is_valid), 0);
-                    //     receive.type = 1;
-                    //     msgrcv(id, &receive, string_size, receive.type, 0);
-                    //     printf("%s\n", receive.text);
-                    // }
-                    //
-                    // index = 0;
-                    // lseek(fd[1], 0, SEEK_SET);
-                    // while ((read(fd[1], &c, 1)) > 0)
-                    // {
-                    //     if (c != '\n')
-                    //     {
-                    //         strcpy(&buf[index], &c);
-                    //         index++;
-                    //     }
-                    //     else
-                    //     {
-                    //         if (strcmp(buf, receive.text) == 0)
-                    //         {
-                    //             // dopisanie użytkownika do pliku pokoju
-                    //             break;
-                    //         }
-                    //         index = 0;
-                    //         memset(buf, 0, strlen(buf));
-                    //     }
-                    //
-                    //     //stworzenie nowego pliku pokoju i dopisanie go do listy pokoi
+                    // printf("____________\n");
+                    
                     break;
                     
                 case 2:
@@ -380,28 +297,34 @@ int main(int argc, char *argv[])
                         }
                         if(rooms_list[i].room_name[0] == '\0' && already_added_2 != true)
                         {
-                            // index = 1;
                             strcpy(rooms_list[i].room_name, receive.text);
                             strcpy(rooms_list[i].usernames[0], receive.sender);
-                            add_room(rooms_list);
                             number_of_rooms += 1;
+                            add_room(rooms_list);
+                            
+                            
+                            number_of_history_structs += 1;
+                            // add_history_struct(history_structs, number_of_history_structs);
+                            for(int i = 0; i <  10; i++){
+                                memset(history_structs[number_of_history_structs - 1].messages[i], '\0', string_size);
+                            }
                             break;
                         }
                     }
-                    for (int i = 0; i < number_of_rooms; i++)
-                    {
-                        printf("Nazwa pokoju:\t%s\n", rooms_list[i].room_name);
-                        fflush(stdout);
-                        int j = 0;
-                        while (rooms_list[i].usernames[j][0] != '\0')
-                        {
-                            printf("\tNazwa uzytkownika:\t%s\n", rooms_list[i].usernames[j]);
-                            fflush(stdout);
-                            j++;
-                        }
+                    // for (int i = 0; i < number_of_rooms; i++)
+                    // {
+                    //     printf("Nazwa pokoju:\t%s\n", rooms_list[i].room_name);
+                    //     fflush(stdout);
+                    //     int j = 0;
+                    //     while (rooms_list[i].usernames[j][0] != '\0')
+                    //     {
+                    //         printf("\tNazwa uzytkownika:\t%s\n", rooms_list[i].usernames[j]);
+                    //         fflush(stdout);
+                    //         j++;
+                    //     }
 
 
-                    }
+                    // }
                     break;
                     
                 case 4:
@@ -440,12 +363,16 @@ int main(int argc, char *argv[])
                                             strcpy(send.text, receive.text);
                                             strcpy(send.sender, receive.sender);
                                             strcpy(send.receiver, receive.receiver);
+                                            send.date.hour = receive.date.hour;
+                                            send.date.minute = receive.date.minute;
+                                            send.date.sec = receive.date.sec;
                                             for (int l = 0; l < MAX_users; l++)
                                             {
                                                 if(strcmp(users_list.usernames[l], receive.receiver) == 0)
                                                 {
                                                     send.type = users_list.ids[l];
-                                                    printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                                                    // printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                                                    msgsnd(id, &send, msg_size, 0);
                                                     break;
                                                 }
                                             }
@@ -469,6 +396,9 @@ int main(int argc, char *argv[])
                     // wysłanie wiadomości na pokój
                     strcpy(send.sender, receive.sender);
                     strcpy(send.receiver, receive.receiver);
+                    send.date.hour = receive.date.hour;
+                    send.date.minute = receive.date.minute;
+                    send.date.sec = receive.date.sec;
                     for(int i = 0; i < number_of_rooms; i++){
                         if(strcmp(receive.receiver, rooms_list[i].room_name) == 0){
                             for(int l = 0; l < MAX_users; l++){
@@ -482,6 +412,7 @@ int main(int argc, char *argv[])
                                             }
                                         }
                                     }
+                                    add_msg_to_history(&history_structs[i], receive);
                                 }
                             }
                         }
@@ -514,6 +445,9 @@ int main(int argc, char *argv[])
                         index ++;
                     }
                     // printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                    send.date.hour = receive.date.hour;
+                    send.date.minute = receive.date.minute;
+                    send.date.sec = receive.date.sec;
                     msgsnd(id, &send, msg_size, 0);
                     break;
 
@@ -537,7 +471,11 @@ int main(int argc, char *argv[])
                         {
                             send.type = users_list.ids[l];
                             strcpy(send.sender, "server");
-                            printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                            send.date.hour = receive.date.hour;
+                            send.date.minute = receive.date.minute;
+                            send.date.sec = receive.date.sec;
+                            // printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                            msgsnd(id, &send, msg_size, 0);
                             break;
                         }
                     }
@@ -560,16 +498,26 @@ int main(int argc, char *argv[])
                         {
                             send.type = users_list.ids[l];
                             strcpy(send.sender, "server");
-                            printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                            send.date.hour = receive.date.hour;
+                            send.date.minute = receive.date.minute;
+                            send.date.sec = receive.date.sec;
+                            // send.date = receive.date;
+                            // printf("%d\n", msgsnd(id, &send, msg_size, 0));
+                            msgsnd(id, &send, msg_size, 0);
                             break;
                         }
                     }
                     break;
                     break;
 
-                case 10:
-                    //wypisnie użytkownikowi historię wiadomości z pokoju
-                    break;
+                // case 10:
+                //     wypisnie użytkownikowi historię wiadomości z pokoju
+                //     for(int j = 0; j < number_of_rooms; j++){
+                //     for(int i = 0; i < 10; i++){
+                //         printf("wiadom: %s\n", history_structs[0].messages[i]);
+                //     }
+                //     }
+                //     break;
 
                 // default:
                 //     printf("default\n");
@@ -582,11 +530,12 @@ int main(int argc, char *argv[])
         char str[string_size];
         while (1)
         {
+            printf("type in 'exit' to stop the server\n");
             scanf("%s", str);
             if(strcmp("exit", str) == 0)
             {
                 msgctl(id, IPC_RMID, NULL);
-                kill(0, SIGKILL);
+                kill(0, SIGINT);
             }
         }
         

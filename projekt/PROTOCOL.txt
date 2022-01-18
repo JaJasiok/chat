@@ -1,0 +1,9 @@
+Komunikacja między serwerem a użytkownikiem przebiega dzięki zastosowaniu kolejki komunikatów IPC. 
+Programy operują na dwóch rodzajach struktur: msgbuf i validation. W wiadomościach msgbuf przesyłane są informacje dotyczące nadawcy,
+odbiorcy, treści przekazanej wiadomości oraz daty wysłania. Wiadomości validation przekazują informacje typu bool i int, będące
+identyfikatorem użytkownika, które ten otrzymuje po zalogowaniu się na serwer. 
+Typy wiadomości oznaczają: 1 - logowanie użytkownika na serwer; 2 - zamknięcię programu klienta i wylogowanie go z serwera;
+3 - wejście użytkownika do pokoju; 4 - wyjście użytkownika z pokoju; 5 - wysłanie wiadmości prywatnej;
+6 - wysłanie wiadomości do pokoju; 7 - wypisanie pokoi aktywnych na serwerze; 8 - wypisanie użytkowników  w danym pokoju;
+9 - wypisanie uzytkowników zalogowanych na serwerze , 50-54 - uniklane identyfikatory ptzydzielane użytkownikom w przypadku zaakceptowania nazwy użytkownika,
+200 - informowanie użytkownika czy jest miejsce na serwerze, 300 - informowanie użytkownika czy jego nazwa została ptzyjęta (jest unikalna)
